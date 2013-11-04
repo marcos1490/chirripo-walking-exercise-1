@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chirripo Challenge - Walking Exercise</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <link type="text/css" href="css/styles.css" rel="stylesheet" />
+
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script src="js/main.js"></script>
+    <script src="js/jquery.csv-0.71.min.js"></script>
+
+    <script>
+
+    google.maps.event.addDomListener(window, 'load', analyzer.initialize);
+
+    </script>
+  </head>
+  <body>
+    <div> 
+      <h1>Chirripo Challenge - Walking exercise</h1>
+       <table>
+      <tr>
+           <td>
+              CSV File:
+           </td>
+            <td>
+              <input type="file" name="file" id="input-file" >
+           </td>
+           <td>
+              <input type="button" name="load" id="load-file" value="Load File">
+           </td>
+           <td>
+            <strong id="error-message" style="color:red; font-size: 12px; display:none;"></strong>
+           </td>
+      </tr>
+      <tr><td colspan="3" id="errors"></td></tr>
+     </table>
+    </div>
+
+    <div id="map-canvas"></div>
+  </body>
+</html>
