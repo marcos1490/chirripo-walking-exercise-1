@@ -14,6 +14,7 @@ var analyzer = (function($) {
   var oldpath;
   var lastIndx = 0;
   var line = null;
+  var path = null;
   var distanceMarker = null;
 
   function updateStopsMarkers() {
@@ -177,6 +178,18 @@ var analyzer = (function($) {
     $("#clear-distance").hide();
   }
 
+  function cleanUpMarkers() {
+
+    for (var i = 0; i < markersArray.length; i++) {
+
+      markersArray[i].setMap(null);
+    }
+    if (path) {
+      path.setMap(null);
+    }
+    cleanUp();
+  }
+
   function initialize() {
     var mapOptions = {
       zoom: 14,
@@ -231,11 +244,14 @@ var analyzer = (function($) {
         }
 
         // get directions and draw on map
-        gDirRequest(directionsService, waypts, function drawGDirLine(path) {
-          var line = new google.maps.Polyline({
+        gDirRequest(directionsService, waypts, function drawGDirLine(line) {
+          if (path) {
+            path.setMap(null);
+          }
+          path = new google.maps.Polyline({
             clickable: false,
             map: map,
-            path: path,
+            path: line,
             strokeColor: '#FF9933',
             strokeOpacity: 1.0,
             strokeWeight: 4
@@ -248,8 +264,6 @@ var analyzer = (function($) {
       alert("You have to use a CSV file.");
       $("#input-file").val('');
     }
-
-
   }
 
 
