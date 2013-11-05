@@ -137,7 +137,7 @@ var analyzer = (function($) {
       position: latlng,
       map: map,
       title: latlng.toString(),
-      icon : '../images/information.png'
+      icon: '../images/information.png'
     });
 
     google.maps.event.addListener(distanceMarker, 'click', function() {
@@ -192,50 +192,64 @@ var analyzer = (function($) {
 
   function initButtons() {
 
-    $("#input-file").bind('change', handleFileSelect);
+    $("#input-file").change(function(evt) {
+      // Check for the various File API support.
+      if (window.File && window.FileReader && window.FileList && window.Blob) {
+        // Great success! All the File APIs are supported.
+        handleFileSelect(evt);
+      } else {
+        alert('The File APIs are not fully supported in this browser.');
+        $("#input-file").val('');
+      }
 
-    $("#clear-distance").click(function() {
-
-      cleanUp();
     });
+
+    $("#clear-distance").click(cleanUp);
 
   } // init buttons
 
   function handleFileSelect(evt) {
     var files = evt.target.files; // FileList object
     var file = files[0];
+    if (file.type.match('text/csv')) {
+      readFile(file, function(data) {
 
-    readFile(file, function(data) {
+        GPSPointsArray = data;
 
-      GPSPointsArray = data;
+        updateStopsMarkers();
+        var location = new google.maps.LatLng(data[0][0], data[0][1]);
+        map.panTo(location);
+        var waypts = [];
 
-      updateStopsMarkers();
-      var location = new google.maps.LatLng(data[0][0], data[0][1]);
-      map.panTo(location);
-      var waypts = [];
+        for (var i = 0; i < data.length; i++) {
 
-      for (var i = 0; i < data.length; i++) {
+          var point = new google.maps.LatLng(data[i][0], data[i][1]);
+          waypts.push({
+            location: point,
+            stopover: true
+          });
+        }
 
-        var point = new google.maps.LatLng(data[i][0], data[i][1]);
-        waypts.push({
-          location: point,
-          stopover: true
+        // get directions and draw on map
+        gDirRequest(directionsService, waypts, function drawGDirLine(path) {
+          var line = new google.maps.Polyline({
+            clickable: false,
+            map: map,
+            path: path,
+            strokeColor: '#FF9933',
+            strokeOpacity: 1.0,
+            strokeWeight: 4
+          });
         });
-      }
 
-      // get directions and draw on map
-      gDirRequest(directionsService, waypts, function drawGDirLine(path) {
-        var line = new google.maps.Polyline({
-          clickable: false,
-          map: map,
-          path: path,
-          strokeColor: '#FF9933', 
-          strokeOpacity: 1.0,
-          strokeWeight: 4
-        });
       });
 
-    });
+    } else {
+      alert("You have to use a CSV file.");
+      $("#input-file").val('');
+    }
+
+
   }
 
 
